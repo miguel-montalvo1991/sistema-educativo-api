@@ -1,0 +1,2395 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduCore — Sistema de Gestión Académica</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #0b0e14;
+        --surface: #12161f;
+        --surface2: #1a1f2e;
+        --surface3: #222840;
+        --accent: #4f7cff;
+        --accent2: #7c5cff;
+        --accent3: #00e5c8;
+        --text: #eef0f8;
+        --text2: #8891b0;
+        --text3: #4a5178;
+        --border: #1e2438;
+        --border2: #2a3050;
+        --red: #ff4f6a;
+        --green: #00c98d;
+        --yellow: #ffb443;
+        --radius: 12px;
+        --radius-sm: 8px;
+        --radius-lg: 18px;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        overflow-x: hidden;
+      }
+
+      /* SIDEBAR */
+      .sidebar {
+        width: 240px;
+        min-width: 240px;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        z-index: 100;
+      }
+      .sidebar-logo {
+        padding: 28px 24px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      .logo-mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .logo-mark svg {
+        width: 18px;
+        height: 18px;
+        color: #fff;
+      }
+      .logo-text {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 1.15rem;
+        letter-spacing: -0.5px;
+        color: var(--text);
+      }
+      .logo-text span {
+        color: var(--accent);
+      }
+      .sidebar-nav {
+        flex: 1;
+        padding: 16px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        overflow-y: auto;
+      }
+      .nav-label {
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text3);
+        padding: 12px 12px 6px;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.875rem;
+        font-weight: 400;
+        color: var(--text2);
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+      }
+      .nav-item svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        opacity: 0.7;
+      }
+      .nav-item:hover {
+        background: var(--surface2);
+        color: var(--text);
+      }
+      .nav-item.active {
+        background: rgba(79, 124, 255, 0.12);
+        color: var(--accent);
+        font-weight: 500;
+      }
+      .nav-item.active svg {
+        opacity: 1;
+      }
+      .nav-badge {
+        margin-left: auto;
+        background: var(--accent);
+        color: #fff;
+        font-size: 0.65rem;
+        font-weight: 600;
+        padding: 2px 7px;
+        border-radius: 20px;
+      }
+      .sidebar-footer {
+        padding: 16px;
+        border-top: 1px solid var(--border);
+      }
+      .user-card {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border-radius: var(--radius-sm);
+        background: var(--surface2);
+      }
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 0.75rem;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .user-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .user-name {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .user-role {
+        font-size: 0.7rem;
+        color: var(--text3);
+      }
+
+      /* MAIN */
+      .main {
+        margin-left: 240px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        height: 60px;
+        background: rgba(11, 14, 20, 0.85);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 32px;
+      }
+      .topbar-left {
+        display: flex;
+        flex-direction: column;
+      }
+      .page-title {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--text);
+        letter-spacing: -0.3px;
+      }
+      .page-sub {
+        font-size: 0.7rem;
+        color: var(--text3);
+      }
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .status-pill {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        background: rgba(0, 201, 141, 0.1);
+        border: 1px solid rgba(0, 201, 141, 0.2);
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: var(--green);
+      }
+      .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 8px var(--green);
+        animation: blink 2s infinite;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+      .content {
+        flex: 1;
+        padding: 28px 32px 60px;
+      }
+
+      /* STATS ROW */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+      .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+        cursor: default;
+        transition: border-color 0.2s;
+      }
+      .stat-card:hover {
+        border-color: var(--border2);
+      }
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+      }
+      .stat-card.blue::before {
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+      }
+      .stat-card.green::before {
+        background: linear-gradient(90deg, var(--green), var(--accent3));
+      }
+      .stat-card.yellow::before {
+        background: linear-gradient(90deg, var(--yellow), #ff7a43);
+      }
+      .stat-card.red::before {
+        background: linear-gradient(90deg, var(--red), #ff8c4f);
+      }
+      .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 14px;
+      }
+      .stat-icon.blue {
+        background: rgba(79, 124, 255, 0.12);
+      }
+      .stat-icon.green {
+        background: rgba(0, 201, 141, 0.12);
+      }
+      .stat-icon.yellow {
+        background: rgba(255, 180, 67, 0.12);
+      }
+      .stat-icon.red {
+        background: rgba(255, 79, 106, 0.12);
+      }
+      .stat-icon svg {
+        width: 18px;
+        height: 18px;
+      }
+      .stat-icon.blue svg {
+        color: var(--accent);
+      }
+      .stat-icon.green svg {
+        color: var(--green);
+      }
+      .stat-icon.yellow svg {
+        color: var(--yellow);
+      }
+      .stat-icon.red svg {
+        color: var(--red);
+      }
+      .stat-value {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 1.75rem;
+        color: var(--text);
+        letter-spacing: -1px;
+        line-height: 1;
+      }
+      .stat-label {
+        font-size: 0.75rem;
+        color: var(--text2);
+        margin-top: 4px;
+      }
+
+      /* PANEL */
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 24px;
+        border-bottom: 1px solid var(--border);
+      }
+      .panel-head-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .panel-icon2 {
+        width: 34px;
+        height: 34px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(79, 124, 255, 0.1);
+      }
+      .panel-icon2 svg {
+        width: 16px;
+        height: 16px;
+        color: var(--accent);
+      }
+      .panel-title {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--text);
+        letter-spacing: -0.2px;
+      }
+      .panel-count {
+        font-size: 0.72rem;
+        color: var(--text3);
+        margin-top: 1px;
+      }
+
+      /* BUTTONS */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 18px;
+        border-radius: var(--radius-sm);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.18s;
+        border: none;
+        white-space: nowrap;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(79, 124, 255, 0.3);
+      }
+      .btn-primary:hover {
+        box-shadow: 0 6px 24px rgba(79, 124, 255, 0.45);
+        transform: translateY(-1px);
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--text2);
+        border: 1px solid var(--border2);
+      }
+      .btn-ghost:hover {
+        background: var(--surface2);
+        color: var(--text);
+        border-color: var(--border2);
+      }
+      .btn-danger {
+        background: rgba(255, 79, 106, 0.1);
+        color: var(--red);
+        border: 1px solid rgba(255, 79, 106, 0.2);
+      }
+      .btn-danger:hover {
+        background: rgba(255, 79, 106, 0.2);
+      }
+      .btn-sm {
+        padding: 5px 12px;
+        font-size: 0.75rem;
+        border-radius: 6px;
+      }
+
+      /* TABLE */
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      thead tr {
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        padding: 11px 20px;
+        text-align: left;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        color: var(--text3);
+      }
+      td {
+        padding: 13px 20px;
+        border-bottom: 1px solid rgba(30, 36, 56, 0.6);
+        font-size: 0.85rem;
+        color: var(--text2);
+        transition: background 0.15s;
+      }
+      tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text3);
+        font-size: 0.85rem;
+      }
+      .empty-state svg {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto 12px;
+        display: block;
+        opacity: 0.3;
+      }
+
+      /* BADGES */
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 500;
+      }
+      .chip-blue {
+        background: rgba(79, 124, 255, 0.12);
+        color: #7fa3ff;
+      }
+      .chip-green {
+        background: rgba(0, 201, 141, 0.12);
+        color: #00e5a8;
+      }
+      .chip-yellow {
+        background: rgba(255, 180, 67, 0.12);
+        color: #ffc96a;
+      }
+      .chip-red {
+        background: rgba(255, 79, 106, 0.12);
+        color: #ff7a8e;
+      }
+      .chip-purple {
+        background: rgba(124, 92, 255, 0.12);
+        color: #a07aff;
+      }
+
+      /* ID CELL */
+      .id-cell {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 0.78rem;
+        color: var(--text3);
+      }
+
+      /* MODAL */
+      .overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(6px);
+        align-items: center;
+        justify-content: center;
+      }
+      .overlay.open {
+        display: flex;
+      }
+      .modal {
+        width: 100%;
+        max-width: 520px;
+        margin: 16px;
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        border-radius: var(--radius-lg);
+        animation: slideUp 0.25s ease;
+        overflow: hidden;
+      }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .modal-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border);
+      }
+      .modal-top-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .modal-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-icon svg {
+        width: 17px;
+        height: 17px;
+        color: #fff;
+      }
+      .modal-title {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--text);
+      }
+      .modal-subtitle {
+        font-size: 0.72rem;
+        color: var(--text3);
+        margin-top: 1px;
+      }
+      .close-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: var(--surface2);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text3);
+        transition: all 0.15s;
+      }
+      .close-btn:hover {
+        background: var(--surface3);
+        color: var(--text);
+      }
+      .close-btn svg {
+        width: 14px;
+        height: 14px;
+      }
+      .modal-body {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .field label {
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: var(--text2);
+        letter-spacing: 0.3px;
+      }
+      .field input,
+      .field select {
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        border-radius: var(--radius-sm);
+        color: var(--text);
+        padding: 10px 14px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.875rem;
+        outline: none;
+        transition: all 0.2s;
+      }
+      .field input::placeholder {
+        color: var(--text3);
+      }
+      .field input:focus,
+      .field select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.12);
+      }
+      .field select option {
+        background: var(--surface2);
+      }
+      .modal-foot {
+        padding: 16px 24px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+
+      /* TOAST */
+      .toasts {
+        position: fixed;
+        bottom: 28px;
+        right: 28px;
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 13px 18px;
+        border-radius: var(--radius-sm);
+        font-size: 0.82rem;
+        font-weight: 500;
+        min-width: 260px;
+        animation: toastIn 0.3s ease;
+        backdrop-filter: blur(12px);
+      }
+      .toast.ok {
+        background: rgba(0, 201, 141, 0.12);
+        border: 1px solid rgba(0, 201, 141, 0.25);
+        color: #00e5a8;
+      }
+      .toast.err {
+        background: rgba(255, 79, 106, 0.12);
+        border: 1px solid rgba(255, 79, 106, 0.25);
+        color: #ff7a8e;
+      }
+      .toast svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+      }
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateX(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      /* SECTION */
+      .section {
+        display: none;
+        animation: fadeUp 0.3s ease;
+      }
+      .section.active {
+        display: block;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* DIVIDER */
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 4px 0;
+      }
+
+      /* SCROLLBAR */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+            <path d="M6 12v5c3 3 9 3 12 0v-5" />
+          </svg>
+        </div>
+        <div class="logo-text">Edu<span>Core</span></div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-label">Principal</div>
+        <button class="nav-item active" data-section="estudiantes">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          Estudiantes
+        </button>
+        <button class="nav-item" data-section="profesores">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <path d="M8 21h8M12 17v4" />
+          </svg>
+          Profesores
+        </button>
+        <button class="nav-item" data-section="cursos">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+          </svg>
+          Cursos
+        </button>
+        <div class="divider"></div>
+        <div class="nav-label">Académico</div>
+        <button class="nav-item" data-section="inscripciones">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+          </svg>
+          Inscripciones
+        </button>
+        <button class="nav-item" data-section="notas">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+          Notas
+        </button>
+        <div class="divider"></div>
+        <div class="nav-label">Sistema</div>
+        <button class="nav-item" data-section="usuarios">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="8" r="4" />
+            <path d="M20 21a8 8 0 1 0-16 0" />
+          </svg>
+          Usuarios
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="avatar">LM</div>
+          <div class="user-info">
+            <div class="user-name">Luis Montalvo</div>
+            <div class="user-role">Administrador</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="page-title" id="page-title">Estudiantes</div>
+          <div class="page-sub" id="page-sub">
+            Gestión y seguimiento de estudiantes
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="status-pill">
+            <div class="status-dot"></div>
+            Sistema activo
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- STATS -->
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card blue">
+            <div class="stat-icon blue">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+              </svg>
+            </div>
+            <div class="stat-value" id="stat-estudiantes">—</div>
+            <div class="stat-label">Estudiantes</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-icon green">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <path d="M8 21h8M12 17v4" />
+              </svg>
+            </div>
+            <div class="stat-value" id="stat-profesores">—</div>
+            <div class="stat-label">Profesores</div>
+          </div>
+          <div class="stat-card yellow">
+            <div class="stat-icon yellow">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+              </svg>
+            </div>
+            <div class="stat-value" id="stat-cursos">—</div>
+            <div class="stat-label">Cursos activos</div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-icon red">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+            </div>
+            <div class="stat-value" id="stat-notas">—</div>
+            <div class="stat-label">Notas registradas</div>
+          </div>
+        </div>
+
+        <!-- ESTUDIANTES -->
+        <div class="section active" id="sec-estudiantes">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-head-left">
+                <div class="panel-icon2">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="panel-title">Estudiantes</div>
+                  <div class="panel-count" id="count-estudiantes">
+                    Cargando...
+                  </div>
+                </div>
+              </div>
+              <button
+                class="btn btn-primary"
+                onclick="openModal('estudiantes')"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Nuevo estudiante
+              </button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Documento</th>
+                    <th>Teléfono</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tb-estudiantes">
+                  <tr>
+                    <td colspan="6">
+                      <div class="empty-state">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        >
+                          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                          <circle cx="9" cy="7" r="4" /></svg
+                        >Sin registros aún
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROFESORES -->
+        <div class="section" id="sec-profesores">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-head-left">
+                <div class="panel-icon2">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <rect x="2" y="3" width="20" height="14" rx="2" />
+                    <path d="M8 21h8M12 17v4" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="panel-title">Profesores</div>
+                  <div class="panel-count" id="count-profesores">
+                    Cargando...
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="openModal('profesores')">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Nuevo profesor
+              </button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Especialidad</th>
+                    <th>Teléfono</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tb-profesores">
+                  <tr>
+                    <td colspan="6">
+                      <div class="empty-state">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        >
+                          <rect x="2" y="3" width="20" height="14" rx="2" />
+                          <path d="M8 21h8M12 17v4" /></svg
+                        >Sin registros aún
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- CURSOS -->
+        <div class="section" id="sec-cursos">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-head-left">
+                <div class="panel-icon2">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="panel-title">Cursos</div>
+                  <div class="panel-count" id="count-cursos">Cargando...</div>
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="openModal('cursos')">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Nuevo curso
+              </button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Profesor</th>
+                    <th>Horario</th>
+                    <th>Cupo</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tb-cursos">
+                  <tr>
+                    <td colspan="6">
+                      <div class="empty-state">Sin registros aún</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- INSCRIPCIONES -->
+        <div class="section" id="sec-inscripciones">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-head-left">
+                <div class="panel-icon2">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                    />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="panel-title">Inscripciones</div>
+                  <div class="panel-count" id="count-inscripciones">
+                    Cargando...
+                  </div>
+                </div>
+              </div>
+              <button
+                class="btn btn-primary"
+                onclick="openModal('inscripciones')"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Nueva inscripción
+              </button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Estudiante</th>
+                    <th>Curso</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tb-inscripciones">
+                  <tr>
+                    <td colspan="6">
+                      <div class="empty-state">Sin registros aún</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOTAS -->
+        <div class="section" id="sec-notas">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-head-left">
+                <div class="panel-icon2">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="panel-title">Notas</div>
+                  <div class="panel-count" id="count-notas">Cargando...</div>
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="openModal('notas')">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Registrar nota
+              </button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Estudiante</th>
+                    <th>Curso</th>
+                    <th>Nota</th>
+                    <th>Período</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tb-notas">
+                  <tr>
+                    <td colspan="6">
+                      <div class="empty-state">Sin registros aún</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- USUARIOS -->
+        <div class="section" id="sec-usuarios">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-head-left">
+                <div class="panel-icon2">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M20 21a8 8 0 1 0-16 0" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="panel-title">Usuarios del sistema</div>
+                  <div class="panel-count" id="count-usuarios">Cargando...</div>
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="openModal('usuarios')">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Nuevo usuario
+              </button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tb-usuarios">
+                  <tr>
+                    <td colspan="5">
+                      <div class="empty-state">Sin registros aún</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODALES -->
+    <div class="overlay" id="modal-estudiantes">
+      <div class="modal">
+        <div class="modal-top">
+          <div class="modal-top-left">
+            <div class="modal-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+              </svg>
+            </div>
+            <div>
+              <div class="modal-title" id="mt-estudiantes">
+                Nuevo estudiante
+              </div>
+              <div class="modal-subtitle">
+                Completa los campos obligatorios *
+              </div>
+            </div>
+          </div>
+          <button class="close-btn" onclick="closeModal('estudiantes')">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="est-id" />
+          <div class="form-row">
+            <div class="field">
+              <label>Nombre completo *</label
+              ><input
+                type="text"
+                id="est-nombre"
+                placeholder="Ej: Juan Pérez"
+              />
+            </div>
+            <div class="field">
+              <label>Documento *</label
+              ><input
+                type="text"
+                id="est-documento"
+                placeholder="Número de documento"
+              />
+            </div>
+          </div>
+          <div class="field">
+            <label>Email *</label
+            ><input type="email" id="est-email" placeholder="juan@correo.com" />
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Teléfono</label
+              ><input type="text" id="est-telefono" placeholder="3001234567" />
+            </div>
+            <div class="field">
+              <label>Fecha de nacimiento</label
+              ><input type="date" id="est-fecha_nac" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('estudiantes')">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" onclick="saveEstudiante()">
+            Guardar registro
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="modal-profesores">
+      <div class="modal">
+        <div class="modal-top">
+          <div class="modal-top-left">
+            <div class="modal-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <path d="M8 21h8M12 17v4" />
+              </svg>
+            </div>
+            <div>
+              <div class="modal-title" id="mt-profesores">Nuevo profesor</div>
+              <div class="modal-subtitle">
+                Completa los campos obligatorios *
+              </div>
+            </div>
+          </div>
+          <button class="close-btn" onclick="closeModal('profesores')">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="prof-id" />
+          <div class="form-row">
+            <div class="field">
+              <label>Nombre completo *</label
+              ><input
+                type="text"
+                id="prof-nombre"
+                placeholder="Ej: Carlos Ruiz"
+              />
+            </div>
+            <div class="field">
+              <label>Especialidad *</label
+              ><input
+                type="text"
+                id="prof-especialidad"
+                placeholder="Ej: Matemáticas"
+              />
+            </div>
+          </div>
+          <div class="field">
+            <label>Email *</label
+            ><input
+              type="email"
+              id="prof-email"
+              placeholder="carlos@correo.com"
+            />
+          </div>
+          <div class="field">
+            <label>Teléfono</label
+            ><input type="text" id="prof-telefono" placeholder="3001234567" />
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('profesores')">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" onclick="saveProfesor()">
+            Guardar registro
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="modal-cursos">
+      <div class="modal">
+        <div class="modal-top">
+          <div class="modal-top-left">
+            <div class="modal-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+              </svg>
+            </div>
+            <div>
+              <div class="modal-title" id="mt-cursos">Nuevo curso</div>
+              <div class="modal-subtitle">
+                Completa los campos obligatorios *
+              </div>
+            </div>
+          </div>
+          <button class="close-btn" onclick="closeModal('cursos')">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="cur-id" />
+          <div class="field">
+            <label>Nombre del curso *</label
+            ><input type="text" id="cur-nombre" placeholder="Ej: Álgebra I" />
+          </div>
+          <div class="field">
+            <label>Profesor asignado *</label
+            ><select id="cur-profesor">
+              <option value="">— Seleccionar profesor —</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Horario</label
+              ><input
+                type="text"
+                id="cur-horario"
+                placeholder="Ej: Lunes 8:00am"
+              />
+            </div>
+            <div class="field">
+              <label>Cupo máximo</label
+              ><input type="number" id="cur-cupo" placeholder="30" min="1" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('cursos')">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" onclick="saveCurso()">
+            Guardar registro
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="modal-inscripciones">
+      <div class="modal">
+        <div class="modal-top">
+          <div class="modal-top-left">
+            <div class="modal-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+            </div>
+            <div>
+              <div class="modal-title" id="mt-inscripciones">
+                Nueva inscripción
+              </div>
+              <div class="modal-subtitle">
+                Completa los campos obligatorios *
+              </div>
+            </div>
+          </div>
+          <button class="close-btn" onclick="closeModal('inscripciones')">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="ins-id" />
+          <div class="field">
+            <label>Estudiante *</label
+            ><select id="ins-estudiante">
+              <option value="">— Seleccionar estudiante —</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Curso *</label
+            ><select id="ins-curso">
+              <option value="">— Seleccionar curso —</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Fecha de inscripción *</label
+              ><input type="date" id="ins-fecha" />
+            </div>
+            <div class="field">
+              <label>Estado</label>
+              <select id="ins-estado">
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+                <option value="retirado">Retirado</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('inscripciones')">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" onclick="saveInscripcion()">
+            Guardar registro
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="modal-notas">
+      <div class="modal">
+        <div class="modal-top">
+          <div class="modal-top-left">
+            <div class="modal-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+            </div>
+            <div>
+              <div class="modal-title" id="mt-notas">Registrar nota</div>
+              <div class="modal-subtitle">
+                Completa los campos obligatorios *
+              </div>
+            </div>
+          </div>
+          <button class="close-btn" onclick="closeModal('notas')">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="nota-id" />
+          <div class="field">
+            <label>Estudiante *</label
+            ><select id="nota-estudiante">
+              <option value="">— Seleccionar estudiante —</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Curso *</label
+            ><select id="nota-curso">
+              <option value="">— Seleccionar curso —</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Nota (0.0 – 5.0) *</label
+                ><input
+                type="number"
+                id="nota-valor"
+                placeholder="4.5"
+                min="0"
+                max="5"
+                step="0.1"
+                />
+            </div>
+            <div class="field">
+              <label>Período académico *</label
+              ><input type="text" id="nota-periodo" placeholder="Ej: 2025-1" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('notas')">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" onclick="saveNota()">
+            Guardar registro
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="modal-usuarios">
+      <div class="modal">
+        <div class="modal-top">
+          <div class="modal-top-left">
+            <div class="modal-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M20 21a8 8 0 1 0-16 0" />
+              </svg>
+            </div>
+            <div>
+              <div class="modal-title" id="mt-usuarios">Nuevo usuario</div>
+              <div class="modal-subtitle">
+                Completa los campos obligatorios *
+              </div>
+            </div>
+          </div>
+          <button class="close-btn" onclick="closeModal('usuarios')">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="usu-id" />
+          <div class="form-row">
+            <div class="field">
+              <label>Nombre completo *</label
+              ><input type="text" id="usu-nombre" placeholder="Ej: Admin" />
+            </div>
+            <div class="field">
+              <label>Rol</label
+              ><select id="usu-rol">
+                <option value="estudiante">Estudiante</option>
+                <option value="profesor">Profesor</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Email *</label
+            ><input
+              type="email"
+              id="usu-email"
+              placeholder="admin@correo.com"
+            />
+          </div>
+          <div class="field">
+            <label>Password *</label
+            ><input type="password" id="usu-password" placeholder="••••••••" />
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('usuarios')">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" onclick="saveUsuario()">
+            Guardar registro
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toasts" id="toasts"></div>
+
+    <script>
+      const PASSWORD = "academia2026";
+      const pageMeta = {
+        estudiantes: {
+          title: "Estudiantes",
+          sub: "Gestión y seguimiento de estudiantes",
+        },
+        profesores: {
+          title: "Profesores",
+          sub: "Docentes registrados en el sistema",
+        },
+        cursos: { title: "Cursos", sub: "Oferta académica disponible" },
+        inscripciones: {
+          title: "Inscripciones",
+          sub: "Registro de estudiantes en cursos",
+        },
+        notas: { title: "Notas", sub: "Calificaciones por período académico" },
+        usuarios: { title: "Usuarios", sub: "Cuentas de acceso al sistema" },
+      };
+
+      function toast(msg, ok = true) {
+        const t = document.createElement("div");
+        t.className = "toast " + (ok ? "ok" : "err");
+        t.innerHTML =
+          (ok
+            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>'
+            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>') +
+          msg;
+        document.getElementById("toasts").appendChild(t);
+        setTimeout(() => t.remove(), 3500);
+      }
+
+      async function api(method, path, body) {
+        const opts = {
+          method,
+          headers: { "Content-Type": "application/json", password: PASSWORD },
+        };
+        if (body) opts.body = JSON.stringify(body);
+        const res = await fetch(path, opts);
+        return res.json();
+      }
+
+      document.querySelectorAll(".nav-item").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".nav-item")
+            .forEach((b) => b.classList.remove("active"));
+          document
+            .querySelectorAll(".section")
+            .forEach((s) => s.classList.remove("active"));
+          btn.classList.add("active");
+          const sec = btn.dataset.section;
+          document.getElementById("sec-" + sec).classList.add("active");
+          document.getElementById("page-title").textContent =
+            pageMeta[sec].title;
+          document.getElementById("page-sub").textContent = pageMeta[sec].sub;
+          loadSection(sec);
+        });
+      });
+
+      function openModal(name, data) {
+        clearModal(name);
+        if (data) fillModal(name, data);
+        document.getElementById("modal-" + name).classList.add("open");
+        if (name === "cursos") loadSelProf();
+        if (name === "inscripciones") {
+            loadSel("ins-estudiante", "estudiantes");
+            loadSel("ins-curso", "cursos");
+        }
+        if (name === "notas") {
+            loadSel("nota-estudiante", "estudiantes");
+            loadSel("nota-curso", "cursos");
+        }
+      }
+      function closeModal(name) {
+        document.getElementById("modal-" + name).classList.remove("open");
+      }
+      function clearModal(name) {
+        document
+          .querySelectorAll(
+            "#modal-" +
+              name +
+              " input:not([type=hidden]), #modal-" +
+              name +
+              " select",
+          )
+          .forEach((i) => (i.value = ""));
+        const h = document.querySelector(
+          "#modal-" + name + " input[type=hidden]",
+        );
+        if (h) h.value = "";
+      }
+      function fillModal(name, d) {
+        if (name === "estudiantes") {
+          document.getElementById("est-id").value = d.id;
+          document.getElementById("est-nombre").value = d.nombre;
+          document.getElementById("est-email").value = d.email;
+          document.getElementById("est-documento").value = d.documento;
+          document.getElementById("est-telefono").value = d.telefono || "";
+          document.getElementById("est-fecha_nac").value = d.fecha_nac || "";
+          document.getElementById("mt-estudiantes").textContent =
+            "Editar estudiante";
+        } else if (name === "profesores") {
+          document.getElementById("prof-id").value = d.id;
+          document.getElementById("prof-nombre").value = d.nombre;
+          document.getElementById("prof-email").value = d.email;
+          document.getElementById("prof-especialidad").value = d.especialidad;
+          document.getElementById("prof-telefono").value = d.telefono || "";
+          document.getElementById("mt-profesores").textContent =
+            "Editar profesor";
+        } else if (name === "cursos") {
+          document.getElementById("cur-id").value = d.id;
+          document.getElementById("cur-nombre").value = d.nombre;
+          document.getElementById("cur-horario").value = d.horario || "";
+          document.getElementById("cur-cupo").value = d.cupo || "";
+          setTimeout(
+            () =>
+              (document.getElementById("cur-profesor").value = d.profesor_id),
+            150,
+          );
+          document.getElementById("mt-cursos").textContent = "Editar curso";
+        } else if (name === "inscripciones") {
+          document.getElementById("ins-id").value = d.id;
+          document.getElementById("ins-fecha").value = d.fecha || "";
+          document.getElementById("ins-estado").value = d.estado || "activo";
+          setTimeout(() => {
+            document.getElementById("ins-estudiante").value = d.estudiante_id;
+            document.getElementById("ins-curso").value = d.curso_id;
+          }, 150);
+          document.getElementById("mt-inscripciones").textContent =
+            "Editar inscripción";
+        } else if (name === "notas") {
+          document.getElementById("nota-id").value = d.id;
+          document.getElementById("nota-valor").value = d.nota;
+          document.getElementById("nota-periodo").value = d.periodo || "";
+          setTimeout(() => {
+            document.getElementById("nota-estudiante").value = d.estudiante_id;
+            document.getElementById("nota-curso").value = d.curso_id;
+          }, 150);
+          document.getElementById("mt-notas").textContent = "Editar nota";
+        } else if (name === "usuarios") {
+          document.getElementById("usu-id").value = d.id;
+          document.getElementById("usu-nombre").value = d.nombre;
+          document.getElementById("usu-email").value = d.email;
+          document.getElementById("usu-rol").value = d.rol || "estudiante";
+          document.getElementById("mt-usuarios").textContent = "Editar usuario";
+        }
+      }
+
+      async function loadSelProf() {
+        const r = await api("GET", "/api/profesores");
+        const s = document.getElementById("cur-profesor");
+        s.innerHTML = '<option value="">— Seleccionar profesor —</option>';
+        (r.data || []).forEach(
+          (p) =>
+            (s.innerHTML +=
+              '<option value="' + p.id + '">' + p.nombre + "</option>"),
+        );
+      }
+      async function loadSel(id, ep) {
+        const r = await api("GET", "/api/" + ep);
+        const s = document.getElementById(id);
+        s.innerHTML = '<option value="">— Seleccionar —</option>';
+        (r.data || []).forEach(
+          (i) =>
+            (s.innerHTML +=
+              '<option value="' + i.id + '">' + i.nombre + "</option>"),
+        );
+      }
+
+      function notaChip(n) {
+        n = parseFloat(n);
+        if (n >= 4) return '<span class="chip chip-green">' + n + "</span>";
+        if (n >= 3) return '<span class="chip chip-yellow">' + n + "</span>";
+        return '<span class="chip chip-red">' + n + "</span>";
+      }
+      function estadoChip(e) {
+        const map = {
+          activo: "chip-green",
+          inactivo: "chip-yellow",
+          retirado: "chip-red",
+        };
+        return (
+          '<span class="chip ' + (map[e] || "chip-blue") + '">' + e + "</span>"
+        );
+      }
+      function rolChip(r) {
+        const map = {
+          admin: "chip-purple",
+          profesor: "chip-blue",
+          estudiante: "chip-green",
+        };
+        return (
+          '<span class="chip ' + (map[r] || "chip-blue") + '">' + r + "</span>"
+        );
+      }
+      function actions(name, d) {
+        return (
+          '<button class="btn btn-ghost btn-sm" onclick=\'openModal("' +
+          name +
+          '",' +
+          JSON.stringify(d) +
+          ')\'>Editar</button> <button class="btn btn-danger btn-sm" onclick="del(\'' +
+          name +
+          "'," +
+          d.id +
+          ')">Eliminar</button>'
+        );
+      }
+
+      function renderEstudiantes(data) {
+        const tb = document.getElementById("tb-estudiantes");
+        document.getElementById("count-estudiantes").textContent =
+          data.length + " registros";
+        document.getElementById("stat-estudiantes").textContent = data.length;
+        if (!data.length) {
+          tb.innerHTML =
+            '<tr><td colspan="6"><div class="empty-state">Sin registros aún</div></td></tr>';
+          return;
+        }
+        tb.innerHTML = data
+          .map(
+            (d) =>
+              '<tr><td class="id-cell">#' +
+              d.id +
+              '</td><td style="color:var(--text);font-weight:500">' +
+              d.nombre +
+              "</td><td>" +
+              d.email +
+              '</td><td><span class="chip chip-blue">' +
+              d.documento +
+              "</span></td><td>" +
+              (d.telefono || "—") +
+              "</td><td>" +
+              actions("estudiantes", d) +
+              "</td></tr>",
+          )
+          .join("");
+      }
+      function renderProfesores(data) {
+        const tb = document.getElementById("tb-profesores");
+        document.getElementById("count-profesores").textContent =
+          data.length + " registros";
+        document.getElementById("stat-profesores").textContent = data.length;
+        if (!data.length) {
+          tb.innerHTML =
+            '<tr><td colspan="6"><div class="empty-state">Sin registros aún</div></td></tr>';
+          return;
+        }
+        tb.innerHTML = data
+          .map(
+            (d) =>
+              '<tr><td class="id-cell">#' +
+              d.id +
+              '</td><td style="color:var(--text);font-weight:500">' +
+              d.nombre +
+              "</td><td>" +
+              d.email +
+              '</td><td><span class="chip chip-purple">' +
+              d.especialidad +
+              "</span></td><td>" +
+              (d.telefono || "—") +
+              "</td><td>" +
+              actions("profesores", d) +
+              "</td></tr>",
+          )
+          .join("");
+      }
+      function renderCursos(data) {
+        const tb = document.getElementById("tb-cursos");
+        document.getElementById("count-cursos").textContent =
+          data.length + " registros";
+        document.getElementById("stat-cursos").textContent = data.length;
+        if (!data.length) {
+          tb.innerHTML =
+            '<tr><td colspan="6"><div class="empty-state">Sin registros aún</div></td></tr>';
+          return;
+        }
+        tb.innerHTML = data
+          .map(
+            (d) =>
+              '<tr><td class="id-cell">#' +
+              d.id +
+              '</td><td style="color:var(--text);font-weight:500">' +
+              d.nombre +
+              "</td><td>" +
+              (d.profesor_nombre || "—") +
+              "</td><td>" +
+              (d.horario || "—") +
+              '</td><td><span class="chip chip-yellow">' +
+              d.cupo +
+              " cupos</span></td><td>" +
+              actions("cursos", d) +
+              "</td></tr>",
+          )
+          .join("");
+      }
+      function renderInscripciones(data) {
+        const tb = document.getElementById("tb-inscripciones");
+        document.getElementById("count-inscripciones").textContent =
+          data.length + " registros";
+        if (!data.length) {
+          tb.innerHTML =
+            '<tr><td colspan="6"><div class="empty-state">Sin registros aún</div></td></tr>';
+          return;
+        }
+        tb.innerHTML = data
+          .map(
+            (d) =>
+              '<tr><td class="id-cell">#' +
+              d.id +
+              '</td><td style="color:var(--text);font-weight:500">' +
+              (d.estudiante_nombre || d.estudiante_id) +
+              "</td><td>" +
+              (d.curso_nombre || d.curso_id) +
+              "</td><td>" +
+              (d.fecha || "—") +
+              "</td><td>" +
+              estadoChip(d.estado) +
+              "</td><td>" +
+              actions("inscripciones", d) +
+              "</td></tr>",
+          )
+          .join("");
+      }
+      function renderNotas(data) {
+        const tb = document.getElementById("tb-notas");
+        document.getElementById("count-notas").textContent =
+          data.length + " registros";
+        document.getElementById("stat-notas").textContent = data.length;
+        if (!data.length) {
+          tb.innerHTML =
+            '<tr><td colspan="6"><div class="empty-state">Sin registros aún</div></td></tr>';
+          return;
+        }
+        tb.innerHTML = data
+          .map(
+            (d) =>
+              '<tr><td class="id-cell">#' +
+              d.id +
+              '</td><td style="color:var(--text);font-weight:500">' +
+              (d.estudiante_nombre || d.estudiante_id) +
+              "</td><td>" +
+              (d.curso_nombre || d.curso_id) +
+              "</td><td>" +
+              notaChip(d.nota) +
+              "</td><td>" +
+              (d.periodo || "—") +
+              "</td><td>" +
+              actions("notas", d) +
+              "</td></tr>",
+          )
+          .join("");
+      }
+      function renderUsuarios(data) {
+        const tb = document.getElementById("tb-usuarios");
+        document.getElementById("count-usuarios").textContent =
+          data.length + " registros";
+        if (!data.length) {
+          tb.innerHTML =
+            '<tr><td colspan="5"><div class="empty-state">Sin registros aún</div></td></tr>';
+          return;
+        }
+        tb.innerHTML = data
+          .map(
+            (d) =>
+              '<tr><td class="id-cell">#' +
+              d.id +
+              '</td><td style="color:var(--text);font-weight:500">' +
+              d.nombre +
+              "</td><td>" +
+              d.email +
+              "</td><td>" +
+              rolChip(d.rol) +
+              "</td><td>" +
+              actions("usuarios", d) +
+              "</td></tr>",
+          )
+          .join("");
+      }
+
+      const renders = {
+        estudiantes: renderEstudiantes,
+        profesores: renderProfesores,
+        cursos: renderCursos,
+        inscripciones: renderInscripciones,
+        notas: renderNotas,
+        usuarios: renderUsuarios,
+      };
+
+      async function loadSection(name) {
+        try {
+          const r = await api("GET", "/api/" + name);
+          if (r.data) renders[name](r.data);
+        } catch (e) {}
+      }
+
+      async function saveEstudiante() {
+        const id = document.getElementById("est-id").value;
+        const body = {
+          nombre: document.getElementById("est-nombre").value.trim(),
+          email: document.getElementById("est-email").value.trim(),
+          documento: document.getElementById("est-documento").value.trim(),
+          telefono: document.getElementById("est-telefono").value.trim(),
+          fecha_nac: document.getElementById("est-fecha_nac").value,
+        };
+        if (!body.nombre || !body.email || !body.documento) {
+          toast("Nombre, email y documento son obligatorios", false);
+          return;
+        }
+        const r = id
+          ? await api("PUT", "/api/estudiantes/" + id, body)
+          : await api("POST", "/api/estudiantes", body);
+        if (r.success) {
+          toast(id ? "Estudiante actualizado" : "Estudiante creado");
+          closeModal("estudiantes");
+          loadSection("estudiantes");
+        } else toast(r.message || "Error", false);
+      }
+      async function saveProfesor() {
+        const id = document.getElementById("prof-id").value;
+        const body = {
+          nombre: document.getElementById("prof-nombre").value.trim(),
+          email: document.getElementById("prof-email").value.trim(),
+          especialidad: document
+            .getElementById("prof-especialidad")
+            .value.trim(),
+          telefono: document.getElementById("prof-telefono").value.trim(),
+        };
+        if (!body.nombre || !body.email || !body.especialidad) {
+          toast("Nombre, email y especialidad son obligatorios", false);
+          return;
+        }
+        const r = id
+          ? await api("PUT", "/api/profesores/" + id, body)
+          : await api("POST", "/api/profesores", body);
+        if (r.success) {
+          toast(id ? "Profesor actualizado" : "Profesor creado");
+          closeModal("profesores");
+          loadSection("profesores");
+        } else toast(r.message || "Error", false);
+      }
+      async function saveCurso() {
+        const id = document.getElementById("cur-id").value;
+        const body = {
+          nombre: document.getElementById("cur-nombre").value.trim(),
+          profesor_id: parseInt(document.getElementById("cur-profesor").value),
+          horario: document.getElementById("cur-horario").value.trim(),
+          cupo: parseInt(document.getElementById("cur-cupo").value) || 30,
+        };
+        if (!body.nombre || !body.profesor_id) {
+          toast("Nombre y profesor son obligatorios", false);
+          return;
+        }
+        const r = id
+          ? await api("PUT", "/api/cursos/" + id, body)
+          : await api("POST", "/api/cursos", body);
+        if (r.success) {
+          toast(id ? "Curso actualizado" : "Curso creado");
+          closeModal("cursos");
+          loadSection("cursos");
+        } else toast(r.message || "Error", false);
+      }
+      async function saveInscripcion() {
+        const id = document.getElementById("ins-id").value;
+        const body = {
+          estudiante_id: parseInt(
+            document.getElementById("ins-estudiante").value,
+          ),
+          curso_id: parseInt(document.getElementById("ins-curso").value),
+          fecha: document.getElementById("ins-fecha").value,
+          estado: document.getElementById("ins-estado").value,
+        };
+        if (!body.estudiante_id || !body.curso_id || !body.fecha) {
+          toast("Todos los campos son obligatorios", false);
+          return;
+        }
+        const r = id
+          ? await api("PUT", "/api/inscripciones/" + id, body)
+          : await api("POST", "/api/inscripciones", body);
+        if (r.success) {
+          toast("Inscripción guardada");
+          closeModal("inscripciones");
+          loadSection("inscripciones");
+        } else toast(r.message || "Error", false);
+      }
+      async function saveNota() {
+        const id = document.getElementById("nota-id").value;
+        const nota = parseFloat(document.getElementById("nota-valor").value);
+        const body = {
+          estudiante_id: parseInt(
+            document.getElementById("nota-estudiante").value,
+          ),
+          curso_id: parseInt(document.getElementById("nota-curso").value),
+          nota,
+          periodo: document.getElementById("nota-periodo").value.trim(),
+        };
+        if (
+          !body.estudiante_id ||
+          !body.curso_id ||
+          isNaN(nota) ||
+          !body.periodo
+        ) {
+          toast("Todos los campos son obligatorios", false);
+          return;
+        }
+        if (nota < 0 || nota > 5) {
+          toast("La nota debe estar entre 0 y 5", false);
+          return;
+        }
+        const r = id
+          ? await api("PUT", "/api/notas/" + id, body)
+          : await api("POST", "/api/notas", body);
+        if (r.success) {
+          toast(id ? "Nota actualizada" : "Nota registrada");
+          closeModal("notas");
+          loadSection("notas");
+        } else toast(r.message || "Error", false);
+      }
+      async function saveUsuario() {
+        const id = document.getElementById("usu-id").value;
+        const body = {
+          nombre: document.getElementById("usu-nombre").value.trim(),
+          email: document.getElementById("usu-email").value.trim(),
+          password: document.getElementById("usu-password").value,
+          rol: document.getElementById("usu-rol").value,
+        };
+        if (!body.nombre || !body.email || !body.password) {
+          toast("Nombre, email y password son obligatorios", false);
+          return;
+        }
+        const r = id
+          ? await api("PUT", "/api/usuarios/" + id, body)
+          : await api("POST", "/api/usuarios", body);
+        if (r.success) {
+          toast(id ? "Usuario actualizado" : "Usuario creado");
+          closeModal("usuarios");
+          loadSection("usuarios");
+        } else toast(r.message || "Error", false);
+      }
+      async function del(section, id) {
+        if (
+          !confirm("¿Eliminar este registro? Esta acción no se puede deshacer.")
+        )
+          return;
+        const r = await api("DELETE", "/api/" + section + "/" + id);
+        if (r.success) {
+          toast("Registro eliminado");
+          loadSection(section);
+        } else toast(r.message || "Error", false);
+      }
+
+      // Cargar stats al inicio
+      async function loadStats() {
+        const secs = ["estudiantes", "profesores", "cursos", "notas"];
+        for (const s of secs) {
+          try {
+            const r = await api("GET", "/api/" + s);
+            if (r.data)
+              document.getElementById("stat-" + s).textContent = r.data.length;
+          } catch (e) {}
+        }
+      }
+      loadStats();
+      loadSection("estudiantes");
+    </script>
+  </body>
+</html>
