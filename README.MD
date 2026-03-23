@@ -1,6 +1,6 @@
 # 🎓 Sistema Educativo — API REST
 
-Sistema de gestión académica desarrollado con Node.js, Express y SQLite. Permite administrar estudiantes, profesores, cursos, inscripciones, notas y usuarios mediante una API REST completa con autenticación por middleware.
+Sistema de gestión académica desarrollado con Node.js, Express y SQLite. Permite administrar estudiantes, profesores, materias, cursos, inscripciones, notas y usuarios mediante una API REST completa con autenticación por middleware.
 
 ---
 
@@ -17,8 +17,9 @@ Sistema de gestión académica desarrollado con Node.js, Express y SQLite. Permi
 | Servicio | URL |
 |---|---|
 | Backend (Render) | *Pendiente de despliegue* |
+| Repositorio | https://github.com/miguel-montalvo1991/sistema-educativo-api |
 
-> ⚠️ El backend está en el plan gratuito de Render. La primera petición puede tardar hasta 60 segundos mientras el servidor despierta (cold start).
+> ⚠️ El backend estará en el plan gratuito de Render. La primera petición puede tardar hasta 60 segundos mientras el servidor despierta (cold start).
 
 ---
 
@@ -42,6 +43,7 @@ sistema-educativo-api/
 ├── models/                           # Capa de acceso a datos (consultas SQL)
 │   ├── estudiantesModel.js
 │   ├── profesoresModel.js
+│   ├── materiasModel.js
 │   ├── cursosModel.js
 │   ├── inscripcionesModel.js
 │   ├── notasModel.js
@@ -50,6 +52,7 @@ sistema-educativo-api/
 ├── controllers/                      # Lógica de negocio y validaciones
 │   ├── estudiantesController.js
 │   ├── profesoresController.js
+│   ├── materiasController.js
 │   ├── cursosController.js
 │   ├── inscripcionesController.js
 │   ├── notasController.js
@@ -58,6 +61,7 @@ sistema-educativo-api/
 └── routes/                           # Definición de rutas por recurso
     ├── estudiantesRutas.js
     ├── profesoresRutas.js
+    ├── materiasRutas.js
     ├── cursosRutas.js
     ├── inscripcionesRutas.js
     ├── notasRutas.js
@@ -71,7 +75,7 @@ sistema-educativo-api/
 | Tecnología | Uso |
 |---|---|
 | Node.js | Entorno de ejecución del backend |
-| Express | Framework para la API REST |
+| Express v5 | Framework para la API REST |
 | SQLite3 | Base de datos local en archivo .db |
 | CORS | Comunicación entre frontend y backend |
 | dotenv | Manejo de variables de entorno |
@@ -85,7 +89,7 @@ sistema-educativo-api/
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/sistema-educativo-api.git
+git clone https://github.com/miguel-montalvo1991/sistema-educativo-api.git
 cd sistema-educativo-api
 ```
 
@@ -176,7 +180,7 @@ Todos los módulos siguen el mismo patrón REST. La URL base es `/api`.
 | PUT | /api/estudiantes/:id | Actualiza un estudiante |
 | DELETE | /api/estudiantes/:id | Elimina un estudiante |
 
-**Ejemplo body POST/PUT:**
+**Body POST/PUT:**
 ```json
 {
   "nombre": "Juan Pérez",
@@ -187,7 +191,7 @@ Todos los módulos siguen el mismo patrón REST. La URL base es `/api`.
 }
 ```
 
-**Filtros disponibles (query params):**
+**Filtros disponibles:**
 ```
 GET /api/estudiantes?nombre=juan
 GET /api/estudiantes?email=correo.com
@@ -206,7 +210,7 @@ GET /api/estudiantes?documento=123
 | PUT | /api/profesores/:id | Actualiza un profesor |
 | DELETE | /api/profesores/:id | Elimina un profesor |
 
-**Ejemplo body POST/PUT:**
+**Body POST/PUT:**
 ```json
 {
   "nombre": "Carlos Ruiz",
@@ -218,27 +222,51 @@ GET /api/estudiantes?documento=123
 
 ---
 
+### 📖 Materias — `/api/materias`
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | /api/materias | Retorna todas las materias |
+| GET | /api/materias/:id | Busca una materia por ID |
+| POST | /api/materias | Crea una nueva materia |
+| PUT | /api/materias/:id | Actualiza una materia |
+| DELETE | /api/materias/:id | Elimina una materia |
+
+**Body POST/PUT:**
+```json
+{
+  "nombre": "Álgebra",
+  "descripcion": "Fundamentos de álgebra lineal",
+  "creditos": 3
+}
+```
+
+> ⚠️ El nombre de la materia debe ser único. Los créditos deben ser mayores a 0, por defecto son 3.
+
+---
+
 ### 📚 Cursos — `/api/cursos`
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| GET | /api/cursos | Retorna todos los cursos con nombre del profesor |
+| GET | /api/cursos | Retorna todos los cursos con nombre del profesor y materia |
 | GET | /api/cursos/:id | Busca un curso por ID |
 | POST | /api/cursos | Crea un nuevo curso |
 | PUT | /api/cursos/:id | Actualiza un curso |
 | DELETE | /api/cursos/:id | Elimina un curso |
 
-**Ejemplo body POST/PUT:**
+**Body POST/PUT:**
 ```json
 {
   "nombre": "Álgebra I",
   "profesor_id": 1,
+  "materia_id": 1,
   "horario": "Lunes 8:00am",
   "cupo": 30
 }
 ```
 
-> ⚠️ El `profesor_id` debe existir en la tabla de profesores, de lo contrario retorna 404.
+> ⚠️ El `profesor_id` y el `materia_id` deben existir previamente, de lo contrario retorna 404.
 
 ---
 
@@ -252,11 +280,11 @@ GET /api/estudiantes?documento=123
 | PUT | /api/inscripciones/:id | Actualiza una inscripción |
 | DELETE | /api/inscripciones/:id | Elimina una inscripción |
 
-**Ejemplo body POST/PUT:**
+**Body POST/PUT:**
 ```json
 {
   "estudiante_id": 1,
-  "curso_id": 2,
+  "curso_id": 1,
   "fecha": "2025-03-01",
   "estado": "activo"
 }
@@ -276,11 +304,11 @@ Valores permitidos para `estado`: `activo`, `inactivo`, `retirado`
 | PUT | /api/notas/:id | Actualiza una nota |
 | DELETE | /api/notas/:id | Elimina una nota |
 
-**Ejemplo body POST/PUT:**
+**Body POST/PUT:**
 ```json
 {
   "estudiante_id": 1,
-  "curso_id": 2,
+  "curso_id": 1,
   "nota": 4.5,
   "periodo": "2025-1"
 }
@@ -300,7 +328,7 @@ Valores permitidos para `estado`: `activo`, `inactivo`, `retirado`
 | PUT | /api/usuarios/:id | Actualiza un usuario |
 | DELETE | /api/usuarios/:id | Elimina un usuario |
 
-**Ejemplo body POST/PUT:**
+**Body POST/PUT:**
 ```json
 {
   "nombre": "Admin",
@@ -314,9 +342,106 @@ Valores permitidos para `rol`: `admin`, `profesor`, `estudiante`
 
 ---
 
+## 🧪 Pruebas con Postman
+
+Incluir siempre el header de autenticación en cada petición:
+
+```
+Key:   password
+Value: academia2026
+```
+
+El orden correcto para crear datos desde cero es el siguiente, ya que hay dependencias entre tablas:
+
+**Paso 1 — Crear una materia:**
+- Método: `POST`
+- URL: `http://localhost:3000/api/materias`
+- Header: `password: academia2026`
+- Body:
+```json
+{
+  "nombre": "Álgebra",
+  "descripcion": "Fundamentos de álgebra",
+  "creditos": 3
+}
+```
+
+**Paso 2 — Crear un profesor:**
+- Método: `POST`
+- URL: `http://localhost:3000/api/profesores`
+- Header: `password: academia2026`
+- Body:
+```json
+{
+  "nombre": "Carlos Ruiz",
+  "email": "carlos@correo.com",
+  "especialidad": "Matemáticas",
+  "telefono": "3109876543"
+}
+```
+
+**Paso 3 — Crear un curso:**
+- Método: `POST`
+- URL: `http://localhost:3000/api/cursos`
+- Header: `password: academia2026`
+- Body:
+```json
+{
+  "nombre": "Álgebra I",
+  "profesor_id": 1,
+  "materia_id": 1,
+  "horario": "Lunes 8:00am",
+  "cupo": 30
+}
+```
+
+**Paso 4 — Crear un estudiante:**
+- Método: `POST`
+- URL: `http://localhost:3000/api/estudiantes`
+- Header: `password: academia2026`
+- Body:
+```json
+{
+  "nombre": "Luis Montalvo",
+  "email": "luis@correo.com",
+  "documento": "1234567890",
+  "telefono": "3001234567"
+}
+```
+
+**Paso 5 — Crear una inscripción:**
+- Método: `POST`
+- URL: `http://localhost:3000/api/inscripciones`
+- Header: `password: academia2026`
+- Body:
+```json
+{
+  "estudiante_id": 1,
+  "curso_id": 1,
+  "fecha": "2025-03-01",
+  "estado": "activo"
+}
+```
+
+**Paso 6 — Registrar una nota:**
+- Método: `POST`
+- URL: `http://localhost:3000/api/notas`
+- Header: `password: academia2026`
+- Body:
+```json
+{
+  "estudiante_id": 1,
+  "curso_id": 1,
+  "nota": 4.5,
+  "periodo": "2025-1"
+}
+```
+
+---
+
 ## 🗄️ Base de datos
 
-Las tablas se crean automáticamente al iniciar el servidor. El esquema es el siguiente:
+Las tablas se crean automáticamente al iniciar el servidor en este orden:
 
 ```sql
 -- Usuarios del sistema
@@ -338,7 +463,7 @@ CREATE TABLE IF NOT EXISTS profesores (
   telefono     TEXT
 );
 
--- Materias
+-- Materias (debe crearse antes que cursos)
 CREATE TABLE IF NOT EXISTS materias (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   nombre      TEXT    NOT NULL UNIQUE,
@@ -346,7 +471,7 @@ CREATE TABLE IF NOT EXISTS materias (
   creditos    INTEGER NOT NULL DEFAULT 3 CHECK(creditos > 0)
 );
 
--- Cursos (relaciona profesor y materia)
+-- Cursos (depende de profesores y materias)
 CREATE TABLE IF NOT EXISTS cursos (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   nombre      TEXT    NOT NULL,
@@ -368,7 +493,7 @@ CREATE TABLE IF NOT EXISTS estudiantes (
   fecha_nac TEXT
 );
 
--- Inscripciones (estudiante en curso)
+-- Inscripciones (depende de estudiantes y cursos)
 CREATE TABLE IF NOT EXISTS inscripciones (
   id            INTEGER PRIMARY KEY AUTOINCREMENT,
   estudiante_id INTEGER NOT NULL,
@@ -380,7 +505,7 @@ CREATE TABLE IF NOT EXISTS inscripciones (
   FOREIGN KEY (curso_id)      REFERENCES cursos(id)
 );
 
--- Notas
+-- Notas (depende de estudiantes y cursos)
 CREATE TABLE IF NOT EXISTS notas (
   id            INTEGER PRIMARY KEY AUTOINCREMENT,
   estudiante_id INTEGER NOT NULL,
@@ -397,14 +522,17 @@ CREATE TABLE IF NOT EXISTS notas (
 ## 📊 Diagrama Entidad–Relación
 
 ```
-usuarios
-    
-profesores ──────1──────< cursos >──────1────── materias
-                              │
-                              │
-estudiantes ─────1──────< inscripciones
-      │
-      └──────1──────< notas >──────1────── cursos
+usuarios (tabla independiente — gestión de acceso)
+
+profesores ──1────< cursos >────1── materias
+                      │
+              1       │       1
+              │       │       │
+          inscripciones    notas
+              │               │
+              1               1
+              │               │
+          estudiantes ────────┘
 ```
 
 **Relaciones:**
@@ -414,6 +542,43 @@ estudiantes ─────1──────< inscripciones
 - Un **curso** puede tener muchas **inscripciones** (1:N)
 - Un **estudiante** puede tener muchas **notas** (1:N)
 - Un **curso** puede tener muchas **notas** (1:N)
+
+---
+
+## ☁️ Despliegue en Render
+
+### 1. Crear cuenta en Render
+Ir a [https://render.com](https://render.com) y registrarse con la cuenta de GitHub.
+
+### 2. Crear un nuevo Web Service
+- Clic en **New** → **Web Service**
+- Conectar el repositorio `sistema-educativo-api`
+- Configurar así:
+
+| Campo | Valor |
+|---|---|
+| Name | sistema-educativo-api |
+| Runtime | Node |
+| Build Command | `npm install` |
+| Start Command | `npm start` |
+| Instance Type | Free |
+
+### 3. Agregar variables de entorno
+En la sección **Environment**, agregar:
+
+| Key | Value |
+|---|---|
+| PORT | 3000 |
+| API_PASSWORD | academia2026 |
+
+### 4. Desplegar
+Clic en **Create Web Service**. Render descarga el repositorio, instala dependencias y arranca el servidor. La URL quedará así:
+
+```
+https://sistema-educativo-api.onrender.com
+```
+
+> ⚠️ En el plan gratuito el servidor se apaga si no recibe peticiones por 15 minutos. La primera petición después de ese tiempo puede tardar hasta 60 segundos.
 
 ---
 
@@ -429,8 +594,6 @@ Rutas  →  Controladores  →  Modelos  →  Base de datos
 - **Controladores:** contienen las validaciones y la lógica de negocio
 - **Modelos:** se encargan únicamente de las consultas SQL
 
-Esta arquitectura hace el código más organizado, fácil de mantener y de escalar.
-
 ---
 
 ## ✅ Validaciones implementadas
@@ -440,40 +603,20 @@ Esta arquitectura hace el código más organizado, fácil de mantener y de escal
 - Unicidad de email y documento antes de insertar
 - Verificación de existencia de FK antes de crear registros dependientes
 - Rango de nota entre 0.0 y 5.0
-- Valores permitidos para campos con CHECK (rol, estado, metodoPago)
+- Créditos de materia deben ser mayores a 0
+- Valores permitidos para campos con CHECK (rol, estado)
 - Respuesta 404 cuando no existe el registro solicitado
 - Respuesta 400 para datos inválidos
 - Respuesta 401/403 para autenticación fallida
 
 ---
 
-## 🧪 Pruebas con Postman
-
-Para probar los endpoints incluir siempre el header de autenticación:
-
-```
-Key:   password
-Value: academia2026
-```
-
-**Ejemplo — crear un estudiante:**
-- Método: `POST`
-- URL: `http://localhost:3000/api/estudiantes`
-- Header: `password: academia2026`
-- Body (JSON):
-```json
-{
-  "nombre": "Luis Montalvo",
-  "email": "luis@correo.com",
-  "documento": "1234567890",
-  "telefono": "3001234567"
-}
-```
-
----
-
 ## 💭 Reflexión del desarrollador
 
-Durante el desarrollo de este proyecto aprendí a estructurar un backend en capas (rutas, controladores y modelos), a conectar Node.js con SQLite activando las llaves foráneas con `PRAGMA foreign_keys = ON`, y a proteger los endpoints con un middleware de autenticación. También apliqué validaciones robustas en cada endpoint y entendí la importancia de separar la configuración del código usando variables de entorno con dotenv. Fue un proceso de mucho aprendizaje donde cada error me enseñó algo nuevo.
+Durante el desarrollo de este proyecto aprendí a estructurar un backend en capas separando rutas, controladores y modelos, lo cual hace el código mucho más organizado y fácil de mantener. Conectar Node.js con SQLite y activar las llaves foráneas con `PRAGMA foreign_keys = ON` fue algo nuevo para mí porque SQLite las trae desactivadas por defecto y sin eso las relaciones entre tablas no se respetan.
+
+También entendí la importancia del orden en que se crean las tablas — si una tabla depende de otra mediante una llave foránea, la tabla padre debe existir primero. Eso lo aprendí cuando el módulo de materias faltaba y el servidor fallaba al intentar crear cursos.
+
+Proteger los endpoints con un middleware de autenticación y manejar las variables de entorno con dotenv me enseñó buenas prácticas que se usan en proyectos reales. Cada error que encontré en el camino me obligó a entender mejor cómo funciona todo por dentro.
 
 ---
