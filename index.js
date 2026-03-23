@@ -26,6 +26,7 @@ const cursosRutas          = require('./routes/cursosRutas');
 const inscripcionesRutas   = require('./routes/inscripcionesRutas');
 const notasRutas           = require('./routes/notasRutas');
 const usuariosRutas        = require('./routes/usuariosRutas');
+const materiasRutas        = require('./routes/materiasRutas');
 
 // Creamos la aplicación de Express
 const app = express();
@@ -65,6 +66,7 @@ app.use('/api/notas',         notasRutas);
 
 // rutas de usuarios quedan bajo /api/usuarios 
 app.use('/api/usuarios', usuariosRutas);
+app.use('/api/materias', materiasRutas);
 
 // ── RUTA RAÍZ ─────────────────────────────────────────────────────────
 
