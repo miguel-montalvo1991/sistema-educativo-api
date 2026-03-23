@@ -1,25 +1,19 @@
-// Importamos dotenv para cargar las variables del archivo .env
-// esto debe ir primero antes que cualquier otra cosa
+// ── CONFIGURACIÓN INICIAL ──────────────────────────────────────────────
+
+// Cargamos variables de entorno (.env)
 require('dotenv').config();
 
-// Importamos Express para crear el servidor
+// Importamos dependencias
 const express = require('express');
-
-// Importamos CORS para permitir que el frontend se comunique con la API
-// sin CORS el navegador bloquea las peticiones entre dominios diferentes
 const cors = require('cors');
 
-// Importamos path para manejar rutas de archivos
-const path = require('path');
+// Importamos conexión DB (se ejecuta y crea tablas)
+require('./db/db');
 
-// Importamos la conexión a la base de datos
-// al importarla se ejecuta el archivo db.js y se crean las tablas
-const db = require('./db/db');
-
-// Importamos el middleware de autenticación
+// Middleware de autenticación
 const verificarPassword = require('./middlewares/auth');
 
-// Importamos todas las rutas del proyecto
+// Rutas
 const estudiantesRutas     = require('./routes/estudiantesRutas');
 const profesoresRutas      = require('./routes/profesoresRutas');
 const cursosRutas          = require('./routes/cursosRutas');
@@ -28,72 +22,49 @@ const notasRutas           = require('./routes/notasRutas');
 const usuariosRutas        = require('./routes/usuariosRutas');
 const materiasRutas        = require('./routes/materiasRutas');
 
-// Creamos la aplicación de Express
+// Creamos app
 const app = express();
 
-// ── MIDDLEWARES GLOBALES ───────────────────────────────────────────────
 
-// Habilitamos CORS para que el frontend pueda hacer peticiones a la API
+// ── MIDDLEWARES GLOBALES ──────────────────────────────────────────────
+
+// Permitir peticiones externas
 app.use(cors());
 
-// Habilitamos el parsing de JSON — sin esto req.body llega undefined
+// Permitir JSON en req.body
 app.use(express.json());
 
 
-// ── MIDDLEWARE DE AUTENTICACIÓN ────────────────────────────────────────
+// ── AUTENTICACIÓN GLOBAL ──────────────────────────────────────────────
 
-// Aplicamos el middleware de autenticación a todas las rutas que empiecen con /api
-// esto protege todos los endpoints sin tener que repetirlo en cada ruta
+// Protegemos todas las rutas bajo /api
 app.use('/api', verificarPassword);
 
-// ── RUTAS DE LA API ────────────────────────────────────────────────────
 
-// Registramos cada router con su prefijo correspondiente
-// todas las rutas de estudiantes quedan bajo /api/estudiantes
+// ── RUTAS ─────────────────────────────────────────────────────────────
+
 app.use('/api/estudiantes',   estudiantesRutas);
-
-// todas las rutas de profesores quedan bajo /api/profesores
 app.use('/api/profesores',    profesoresRutas);
-
-// todas las rutas de cursos quedan bajo /api/cursos
 app.use('/api/cursos',        cursosRutas);
-
-// todas las rutas de inscripciones quedan bajo /api/inscripciones
 app.use('/api/inscripciones', inscripcionesRutas);
-
-// todas las rutas de notas quedan bajo /api/notas
 app.use('/api/notas',         notasRutas);
-
-// rutas de usuarios quedan bajo /api/usuarios 
-app.use('/api/usuarios', usuariosRutas);
-app.use('/api/materias', materiasRutas);
-
-// ── RUTA RAÍZ ─────────────────────────────────────────────────────────
+app.use('/api/usuarios',      usuariosRutas);
+app.use('/api/materias',      materiasRutas);
 
 
+// ── RUTA 404 ──────────────────────────────────────────────────────────
 
-// ── RUTA 404 ───────────────────────────────────────────────────────────
-
-// Si ninguna ruta anterior coincidió respondemos con 404
-// el * captura cualquier ruta que no haya sido definida arriba
-app.use('*splat', (req, res) => {
-    res.status(404).json({
+// Captura cualquier ruta no definida
+app.use('*', (req, res) => {
+  res.status(404).json({
     success: false,
-    message: `La ruta ${req.originalUrl} no existe en esta API`
-    });
+    message: `La ruta ${req.originalUrl} no existe`
+  });
 });
 
-// ── INICIAR SERVIDOR ───────────────────────────────────────────────────
 
-// Leemos el puerto desde las variables de entorno
-// si no existe usamos 3000 como valor por defecto
-const PORT = process.env.PORT || 3000;
+// ── MIDDLEWARE DE ERRORES (ANTES DEL LISTEN) ──────────────────────────
 
-// Ponemos el servidor a escuchar en el puerto definido
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en puerto ${PORT}`);
-});
- // errores globales 
 app.use((err, req, res, next) => {
   console.error(err);
 
@@ -101,4 +72,13 @@ app.use((err, req, res, next) => {
     success: false,
     message: err.message || "Error interno del servidor"
   });
+});
+
+
+// ── INICIAR SERVIDOR ──────────────────────────────────────────────────
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en puerto ${PORT}`);
 });
