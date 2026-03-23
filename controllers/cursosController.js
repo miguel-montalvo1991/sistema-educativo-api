@@ -4,7 +4,9 @@ const modelo = require('../models/cursosModel');
 // Importamos el modelo de profesores para verificar que el profesor existe
 const modeloProfesor = require('../models/profesoresModel');
 
-
+// Importamos el modelo de materias para verificar que la materia existe
+// este import faltaba y causaba que crear o actualizar un curso fallara
+const modeloMateria = require('../models/materiasModel');
 
 // ── GET ALL ────────────────────────────────────────────────────────────
 // Maneja la petición GET /api/cursos
@@ -96,8 +98,7 @@ const create = (req, res) => {
   }
 
   // Verificamos que el profesor exista en la base de datos
-  // esto es la validación de FK — no podemos crear un curso
-  // con un profesor que no existe
+  // no podemos crear un curso con un profesor que no existe
   modeloProfesor.getById(profesor_id, (err, profesor) => {
     if (err) {
       return res.status(500).json({
@@ -116,6 +117,7 @@ const create = (req, res) => {
     }
 
     // Verificamos que la materia exista en la base de datos
+    // no podemos crear un curso con una materia que no existe
     modeloMateria.getById(materia_id, (err, materia) => {
       if (err) {
         return res.status(500).json({
