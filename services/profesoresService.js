@@ -1,58 +1,60 @@
-// ── MODELO ─────────────────────────────────────────
+// ── HELPERS ───────────────────────────────────────
+const { existeOError, esNumero } = require('../utils/validators');
+
+// ── MODELO ───────────────────────────────────────
 const profesoresModel = require('../models/profesoresModel');
 
 
-// ── GET ALL ────────────────────────────────────────
+// ── GET ALL ──────────────────────────────────────
 const obtenerProfesores = async (query) => {
   return await profesoresModel.getAll(query);
 };
 
 
-// ── GET BY ID ──────────────────────────────────────
+// ── GET BY ID ────────────────────────────────────
 const obtenerProfesorPorId = async (id) => {
+
+  esNumero(id, "id");
 
   const profesor = await profesoresModel.getById(id);
 
-  if (!profesor) {
-    throw { status: 404, message: "Profesor no encontrado" };
-  }
-
-  return profesor;
+  return existeOError(profesor, "Profesor no encontrado");
 };
 
 
-// ── CREATE ─────────────────────────────────────────
+// ── CREATE ───────────────────────────────────────
 const crearProfesor = async (data) => {
   return await profesoresModel.create(data);
 };
 
 
-// ── UPDATE ─────────────────────────────────────────
+// ── UPDATE ───────────────────────────────────────
 const actualizarProfesor = async (id, data) => {
+
+  esNumero(id, "id");
 
   const profesor = await profesoresModel.getById(id);
 
-  if (!profesor) {
-    throw { status: 404, message: "Profesor no encontrado" };
-  }
+  existeOError(profesor, "Profesor no encontrado");
 
   return await profesoresModel.update(id, data);
 };
 
 
-// ── DELETE ─────────────────────────────────────────
+// ── DELETE ───────────────────────────────────────
 const eliminarProfesor = async (id) => {
+
+  esNumero(id, "id");
 
   const profesor = await profesoresModel.getById(id);
 
-  if (!profesor) {
-    throw { status: 404, message: "Profesor no encontrado" };
-  }
+  existeOError(profesor, "Profesor no encontrado");
 
   return await profesoresModel.remove(id);
 };
 
 
+// ── EXPORT ───────────────────────────────────────
 module.exports = {
   obtenerProfesores,
   obtenerProfesorPorId,
