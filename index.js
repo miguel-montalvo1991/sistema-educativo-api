@@ -14,6 +14,12 @@ const materiasRutas = require('./routes/materiasRutas');
 const app = express(); 
 app.use(cors()); 
 app.use(express.json()); 
+app.get("/", (req, res) => {
+  res.json({
+    status: "API funcionando",
+    author: "Miguel Montalvo"
+  });
+});  
 app.use('/api', verificarPassword); 
 app.use('/api/estudiantes', estudiantesRutas); 
 app.use('/api/profesores', profesoresRutas); 
