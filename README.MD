@@ -20,10 +20,12 @@ API REST desarrollada con Node.js y Express para la gestión de un sistema educa
 
 El proyecto sigue una arquitectura por capas:
 
+* **Routes** → Definen los endpoints y dirigen las peticiones
 * **Controllers** → Manejan las peticiones HTTP
 * **Services** → Contienen la lógica de negocio
 * **Models** → Acceso a base de datos
-* **Middlewares** → Manejo de errores y validaciones
+* **Middlewares** → Autenticación y manejo de errores
+* **Utils** → Funciones reutilizables (errores, validaciones)
 
 ---
 
@@ -31,12 +33,49 @@ El proyecto sigue una arquitectura por capas:
 
 ```
 ├── controllers/
-├── services/
-├── models/
-├── routes/
+│   ├── cursosController.js
+│   ├── estudiantesController.js
+│   ├── inscripcionesController.js
+│   ├── materiasController.js
+│   ├── notasController.js
+│   ├── profesoresController.js
+│   └── usuariosController.js
+├── db/
+│   └── db.js
 ├── middlewares/
+│   └── auth.js
+├── models/
+│   ├── cursosModel.js
+│   ├── estudiantesModel.js
+│   ├── inscripcionesModel.js
+│   ├── materiasModel.js
+│   ├── notasModel.js
+│   ├── profesoresModel.js
+│   └── usuariosModel.js
+├── routes/
+│   ├── cursosRutas.js
+│   ├── estudiantesRutas.js
+│   ├── inscripcionesRutas.js
+│   ├── materiasRutas.js
+│   ├── notasRutas.js
+│   ├── profesoresRutas.js
+│   └── usuariosRutas.js
+├── services/
+│   ├── cursosService.js
+│   ├── estudiantesService.js
+│   ├── inscripcionesService.js
+│   ├── materiasService.js
+│   ├── notasService.js
+│   ├── profesoresService.js
+│   └── usuariosService.js
 ├── utils/
-├── app.js
+│   ├── errors.js
+│   └── validators.js
+├── public/
+│   └── index.html
+├── .env
+├── .gitignore
+├── index.js
 └── package.json
 ```
 
@@ -52,6 +91,17 @@ npm install
 
 ---
 
+## 🔐 Variables de entorno
+
+Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
+
+```env
+PORT=3000
+PASSWORD=tu_password
+```
+
+---
+
 ## ▶️ Ejecución
 
 ```bash
@@ -61,8 +111,18 @@ npm run dev
 o
 
 ```bash
-node app.js
+node index.js
 ```
+
+---
+
+## 🔑 Autenticación
+
+Todas las rutas bajo `/api` requieren el siguiente header:
+
+| Header     | Valor            |
+|------------|------------------|
+| `password` | `tu_password`    |
 
 ---
 
@@ -70,53 +130,53 @@ node app.js
 
 ### 📌 Cursos
 
-* GET /api/cursos
-* GET /api/cursos/:id
-* POST /api/cursos
-* PUT /api/cursos/:id
-* DELETE /api/cursos/:id
+* `GET    /api/cursos`
+* `GET    /api/cursos/:id`
+* `POST   /api/cursos`
+* `PUT    /api/cursos/:id`
+* `DELETE /api/cursos/:id`
 
 ### 📌 Profesores
 
-* GET /api/profesores
-* GET /api/profesores/:id
-* POST /api/profesores
-* PUT /api/profesores/:id
-* DELETE /api/profesores/:id
+* `GET    /api/profesores`
+* `GET    /api/profesores/:id`
+* `POST   /api/profesores`
+* `PUT    /api/profesores/:id`
+* `DELETE /api/profesores/:id`
 
 ### 📌 Estudiantes
 
-* GET /api/estudiantes
-* GET /api/estudiantes/:id
-* POST /api/estudiantes
-* PUT /api/estudiantes/:id
-* DELETE /api/estudiantes/:id
+* `GET    /api/estudiantes`
+* `GET    /api/estudiantes/:id`
+* `POST   /api/estudiantes`
+* `PUT    /api/estudiantes/:id`
+* `DELETE /api/estudiantes/:id`
 
 ### 📌 Materias
 
-* GET /api/materias
-* GET /api/materias/:id
-* POST /api/materias
-* PUT /api/materias/:id
-* DELETE /api/materias/:id
+* `GET    /api/materias`
+* `GET    /api/materias/:id`
+* `POST   /api/materias`
+* `PUT    /api/materias/:id`
+* `DELETE /api/materias/:id`
 
 ### 📌 Inscripciones
 
-* GET /api/inscripciones
-* POST /api/inscripciones
+* `GET  /api/inscripciones`
+* `POST /api/inscripciones`
 
 ### 📌 Notas
 
-* GET /api/notas
-* POST /api/notas
+* `GET  /api/notas`
+* `POST /api/notas`
 
 ### 📌 Usuarios
 
-* GET /api/usuarios
-* GET /api/usuarios/:id
-* POST /api/usuarios
-* PUT /api/usuarios/:id
-* DELETE /api/usuarios/:id
+* `GET    /api/usuarios`
+* `GET    /api/usuarios/:id`
+* `POST   /api/usuarios`
+* `PUT    /api/usuarios/:id`
+* `DELETE /api/usuarios/:id`
 
 ---
 
@@ -138,11 +198,12 @@ La API usa un middleware global para manejar errores:
 * Node.js
 * Express
 * JavaScript
-* nodemon 
+* SQLite
+* nodemon
 
 ---
 
 ## 👨‍💻 Autor
 
-Miguel Montalvo
+Miguel Montalvo  
 Proyecto académico - SENA
