@@ -97,7 +97,7 @@ Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
 
 ```env
 PORT=3000
-PASSWORD=tu_password
+PASSWORD= academia2026
 ```
 
 ---
@@ -122,7 +122,7 @@ Todas las rutas bajo `/api` requieren el siguiente header:
 
 | Header     | Valor            |
 |------------|------------------|
-| `password` | `tu_password`    |
+| `password` | `academia2026    |
 
 ---
 
