@@ -1,68 +1,107 @@
-// Importamos el modelo de cursos (acceso a DB)
+// ── HELPERS ───────────────────────────────────────
+const { 
+  existeOError, 
+  camposRequeridos, 
+  esNumero, 
+  numeroPositivo 
+} = require('../utils/validators');
+
+
+// ── MODELOS ───────────────────────────────────────
 const cursosModel = require('../models/cursosModel');
+const profesoresModel = require('../models/profesoresModel');
+const materiasModel = require('../models/materiasModel');
 
 
-// ── GET ALL ─────────────────────────────────────────
-// Obtiene todos los cursos con filtros opcionales
+// ── GET ALL ───────────────────────────────────────
 const obtenerCursos = async (query) => {
   return await cursosModel.getAll(query);
 };
 
 
-// ── GET BY ID ───────────────────────────────────────
-// Obtiene un curso por ID y valida que exista
+// ── GET BY ID ─────────────────────────────────────
 const obtenerCursoPorId = async (id) => {
+
+  esNumero(id, "id");
 
   const curso = await cursosModel.getById(id);
 
-  // Si no existe → error 404
-  if (!curso) {
-    throw { status: 404, message: "Curso no encontrado" };
-  }
-
-  return curso;
+  return existeOError(curso, "Curso no encontrado");
 };
 
 
-// ── CREATE ──────────────────────────────────────────
-// Crea un nuevo curso
+// ── CREATE ───────────────────────────────────────
 const crearCurso = async (data) => {
 
-  // Aquí podrías validar datos en el futuro
+  const { profesor_id, materia_id, cupo } = data;
+
+  // ✅ Validaciones
+  camposRequeridos(data, ["nombre", "profesor_id", "materia_id"]);
+
+  esNumero(profesor_id, "profesor_id");
+  esNumero(materia_id, "materia_id");
+
+  if (cupo !== undefined) {
+    numeroPositivo(cupo, "cupo");
+  }
+
+  // ✅ Validar relaciones
+  const profesor = await profesoresModel.getById(profesor_id);
+  existeOError(profesor, "Profesor no existe");
+
+  const materia = await materiasModel.getById(materia_id);
+  existeOError(materia, "Materia no existe");
 
   return await cursosModel.create(data);
 };
 
 
-// ── UPDATE ──────────────────────────────────────────
-// Actualiza un curso existente
+// ── UPDATE ───────────────────────────────────────
 const actualizarCurso = async (id, data) => {
 
-  const curso = await cursosModel.getById(id);
+  esNumero(id, "id");
 
-  if (!curso) {
-    throw { status: 404, message: "Curso no encontrado" };
+  const { profesor_id, materia_id, cupo } = data;
+
+  // Validar existencia del curso
+  const curso = await cursosModel.getById(id);
+  existeOError(curso, "Curso no encontrado");
+
+  // Validaciones
+  camposRequeridos(data, ["nombre", "profesor_id", "materia_id"]);
+
+  esNumero(profesor_id, "profesor_id");
+  esNumero(materia_id, "materia_id");
+
+  if (cupo !== undefined) {
+    numeroPositivo(cupo, "cupo");
   }
+
+  // Validar relaciones
+  const profesor = await profesoresModel.getById(profesor_id);
+  existeOError(profesor, "Profesor no existe");
+
+  const materia = await materiasModel.getById(materia_id);
+  existeOError(materia, "Materia no existe");
 
   return await cursosModel.update(id, data);
 };
 
 
-// ── DELETE ──────────────────────────────────────────
-// Elimina un curso
+// ── DELETE ───────────────────────────────────────
 const eliminarCurso = async (id) => {
+
+  esNumero(id, "id");
 
   const curso = await cursosModel.getById(id);
 
-  if (!curso) {
-    throw { status: 404, message: "Curso no encontrado" };
-  }
+  existeOError(curso, "Curso no encontrado");
 
   return await cursosModel.remove(id);
 };
 
 
-// Exportamos funciones
+// ── EXPORT ───────────────────────────────────────
 module.exports = {
   obtenerCursos,
   obtenerCursoPorId,
