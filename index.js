@@ -1,3 +1,5 @@
+console.log("VERSION NUEVA 🚀");
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
