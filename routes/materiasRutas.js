@@ -1,11 +1,9 @@
-const { Router } = require('express');
-const controlador = require('../controllers/materiasController');
-const router = Router();
-
-router.get('/', controlador.getAll);
-router.get('/:id', controlador.getById);
-router.post('/', controlador.create);
-router.put('/:id', controlador.update);
-router.delete('/:id', controlador.remove);
-
-module.exports = router;
+const { Router } = require('express'); 
+const controlador = require('../controllers/materiasController'); 
+const router = Router(); 
+router.get('/', controlador.obtenerMaterias); 
+router.get('/:id', controlador.obtenerMateriaPorId); 
+router.post('/', controlador.crearMateria); 
+router.put('/:id', controlador.actualizarMateria); 
+router.delete('/:id', controlador.eliminarMateria); 
+module.exports = router; 
