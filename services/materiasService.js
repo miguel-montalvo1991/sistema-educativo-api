@@ -1,51 +1,42 @@
+const { existeOError, esNumero, camposRequeridos } = require('../utils/validators');
 const materiasModel = require('../models/materiasModel');
 
+// GET ALL
 const obtenerMaterias = async (query) => {
-  return await materiasModel.obtenerMaterias(query);
+  return await materiasModel.getAll(query);
 };
 
+// GET BY ID
 const obtenerMateriaPorId = async (id) => {
-  const materia = await materiasModel.obtenerMateriaPorId(id);
-
-  if (!materia) {
-    throw { status: 404, message: "Materia no encontrada" };
-  }
-
-  return materia;
+  esNumero(id, "id");
+  const data = await materiasModel.getById(id);
+  return existeOError(data, "Materia no encontrada");
 };
 
+// CREATE
 const crearMateria = async (data) => {
-  const { nombre, descripcion, creditos } = data;
-
-  if (!nombre) {
-    throw { status: 400, message: "El nombre es obligatorio" };
-  }
-
-  if (creditos && creditos <= 0) {
-    throw { status: 400, message: "Los créditos deben ser mayores a 0" };
-  }
-
-  return await materiasModel.crearMateria(data);
+  camposRequeridos(data, ["nombre"]);
+  return await materiasModel.create(data);
 };
 
+// UPDATE
 const actualizarMateria = async (id, data) => {
-  const materia = await materiasModel.obtenerMateriaPorId(id);
+  esNumero(id, "id");
 
-  if (!materia) {
-    throw { status: 404, message: "Materia no encontrada" };
-  }
+  const existente = await materiasModel.getById(id);
+  existeOError(existente, "Materia no encontrada");
 
-  return await materiasModel.actualizarMateria(id, data);
+  return await materiasModel.update(id, data);
 };
 
+// DELETE
 const eliminarMateria = async (id) => {
-  const materia = await materiasModel.obtenerMateriaPorId(id);
+  esNumero(id, "id");
 
-  if (!materia) {
-    throw { status: 404, message: "Materia no encontrada" };
-  }
+  const existente = await materiasModel.getById(id);
+  existeOError(existente, "Materia no encontrada");
 
-  return await materiasModel.eliminarMateria(id);
+  return await materiasModel.remove(id);
 };
 
 module.exports = {

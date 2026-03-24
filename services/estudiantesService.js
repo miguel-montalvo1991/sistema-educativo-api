@@ -1,3 +1,4 @@
+const { existeOError, esNumero, camposRequeridos } = require('../utils/validators');
 const estudiantesModel = require('../models/estudiantesModel');
 
 const obtenerEstudiantes = async (query) => {
@@ -5,35 +6,30 @@ const obtenerEstudiantes = async (query) => {
 };
 
 const obtenerEstudiantePorId = async (id) => {
+  esNumero(id, "id");
   const data = await estudiantesModel.getById(id);
-
-  if (!data) {
-    throw { status: 404, message: "Estudiante no encontrado" };
-  }
-
-  return data;
+  return existeOError(data, "Estudiante no encontrado");
 };
 
 const crearEstudiante = async (data) => {
+  camposRequeridos(data, ["nombre", "email"]);
   return await estudiantesModel.create(data);
 };
 
 const actualizarEstudiante = async (id, data) => {
-  const dataExistente = await estudiantesModel.getById(id);
+  esNumero(id, "id");
 
-  if (!dataExistente) {
-    throw { status: 404, message: "Estudiante no encontrado" };
-  }
+  const existente = await estudiantesModel.getById(id);
+  existeOError(existente, "Estudiante no encontrado");
 
   return await estudiantesModel.update(id, data);
 };
 
 const eliminarEstudiante = async (id) => {
-  const data = await estudiantesModel.getById(id);
+  esNumero(id, "id");
 
-  if (!data) {
-    throw { status: 404, message: "Estudiante no encontrado" };
-  }
+  const existente = await estudiantesModel.getById(id);
+  existeOError(existente, "Estudiante no encontrado");
 
   return await estudiantesModel.remove(id);
 };
